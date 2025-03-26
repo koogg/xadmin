@@ -95,12 +95,28 @@ class ProductionReport(DbAuditModel):
         verbose_name = "生产报工"
         verbose_name_plural = verbose_name
         ordering = ("-created_time",)
-        unique_together = ('production_order', 'process_step')
 
     def __str__(self):
         return f"{self.production_order.order_number}-{self.process_step.name}"
 
+    def check_completed(self):
+        """检查报工是否已完成"""
+        if self.total_time is not None:
+            from django.core.exceptions import PermissionDenied
+            raise PermissionDenied("已完成的报工不允许再次操作")
+
+    def delete(self, *args, **kwargs):
+        # 当total_time不为null时，不允许删除
+        self.check_completed()
+        return super().delete(*args, **kwargs)
+
     def save(self, *args, **kwargs):
+        # 如果是已存在的记录且total_time不为null，则不允许编辑
+        if self.pk:
+            original = ProductionReport.objects.get(pk=self.pk)
+            if original.total_time is not None:
+                self.check_completed()
+
         if self.end_time and self.start_time:
             total = self.end_time - self.start_time
             if self.pause_time and self.resume_time:
