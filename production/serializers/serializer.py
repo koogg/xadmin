@@ -81,11 +81,16 @@ class ProductionOrderSerializer(BaseModelSerializer):
 class ProductionReportSerializer(BaseModelSerializer):
     class Meta:
         model = models.ProductionReport
-        fields = ['pk', 'production_order', 'process_step', 'start_time', 'pause_time', 'resume_time', 'end_time',
+        fields = ['pk', 'workshop', 'production_order', 'process_step', 'start_time', 'pause_time', 'resume_time',
+                  'end_time',
                   'total_time', 'creator', 'created_time']
-        table_fields = ['pk', 'production_order', 'process_step', 'start_time', 'end_time', 'total_time', 'creator']
+        table_fields = ['pk', 'workshop', 'production_order', 'process_step', 'start_time', 'end_time', 'total_time',
+                        'creator']
         read_only_fields = ['pk', 'creator', 'total_time', 'created_time']
         extra_kwargs = {
+            'workshop': {
+                'attrs': ['pk', 'name'], 'required': True, 'format': "{name}",
+            },
             'production_order': {
                 'attrs': ['pk', 'order_number', 'product_name'], 'required': True,
                 'format': "{order_number}-{product_name}",

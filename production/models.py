@@ -80,6 +80,7 @@ class ProductionOrder(DbBaseModel):
 
 class ProductionReport(DbAuditModel):
     """生产报工"""
+    workshop = models.ForeignKey(Workshop, on_delete=models.CASCADE, verbose_name="生产车间")
     production_order = models.ForeignKey(
         ProductionOrder, on_delete=models.CASCADE, verbose_name="生产工单",
         limit_choices_to={'status__in': ['pending', 'in_progress']}
