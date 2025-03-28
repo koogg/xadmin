@@ -86,7 +86,7 @@ class ProductionReport(DbAuditModel):
         limit_choices_to={'status__in': ['pending', 'in_progress']}
     )
     process_step = models.ForeignKey(ProcessStep, on_delete=models.CASCADE, verbose_name="工序")
-    start_time = models.DateTimeField(verbose_name="开始时间")
+    start_time = models.DateTimeField(null=True,blank=True,verbose_name="开始时间")
     pause_time = models.DateTimeField(null=True, blank=True, verbose_name="暂停时间")
     resume_time = models.DateTimeField(null=True, blank=True, verbose_name="恢复时间")
     end_time = models.DateTimeField(null=True, blank=True, verbose_name="结束时间")

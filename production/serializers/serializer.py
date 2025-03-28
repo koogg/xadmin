@@ -53,13 +53,6 @@ class ProcessStepSerializer(BaseModelSerializer):
 
 
 class ProductionOrderSerializer(BaseModelSerializer):
-    # 修改日期字段的自定义处理，增加更多输入格式支持
-    order_date = serializers.DateField(format="%Y-%m-%d",
-                                       input_formats=['%Y-%m-%d', 'iso-8601', '%Y-%m-%d %H:%M:%S'])
-    planned_start_date = serializers.DateField(format="%Y-%m-%d",
-                                               input_formats=['%Y-%m-%d', 'iso-8601', '%Y-%m-%d %H:%M:%S'])
-    planned_end_date = serializers.DateField(format="%Y-%m-%d",
-                                             input_formats=['%Y-%m-%d', 'iso-8601', '%Y-%m-%d %H:%M:%S'])
 
     class Meta:
         model = models.ProductionOrder
