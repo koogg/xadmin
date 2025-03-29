@@ -82,7 +82,7 @@ class ProductionReport(DbAuditModel):
     """生产报工"""
     workshop = models.ForeignKey(Workshop, on_delete=models.CASCADE, verbose_name="生产车间")
     production_order = models.ForeignKey(
-        ProductionOrder, on_delete=models.CASCADE, verbose_name="生产工单",
+        ProductionOrder, on_delete=models.CASCADE, verbose_name="生产令号",
         limit_choices_to={'status__in': ['pending', 'in_progress']}
     )
     process_step = models.ForeignKey(ProcessStep, on_delete=models.CASCADE, verbose_name="工序")

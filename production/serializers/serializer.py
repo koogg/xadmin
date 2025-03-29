@@ -53,7 +53,6 @@ class ProcessStepSerializer(BaseModelSerializer):
 
 
 class ProductionOrderSerializer(BaseModelSerializer):
-
     class Meta:
         model = models.ProductionOrder
         fields = ['pk', 'order_date', 'order_number', 'production_number', 'product_name', 'planned_start_date',
@@ -85,8 +84,8 @@ class ProductionReportSerializer(BaseModelSerializer):
                 'attrs': ['pk', 'name'], 'required': True, 'format': "{name}",
             },
             'production_order': {
-                'attrs': ['pk', 'order_number', 'product_name'], 'required': True,
-                'format': "{order_number}-{product_name}",
+                'attrs': ['pk', 'production_number'], 'required': True,
+                'format': "{production_number}",
             },
             'process_step': {
                 'attrs': ['pk', 'name', 'code'], 'required': True, 'format': "{code}{name}",
