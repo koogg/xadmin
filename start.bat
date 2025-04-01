@@ -1,47 +1,52 @@
 @echo off
 chcp 65001 > nul
-echo ===== ï¿½Ô¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Å±ï¿½ =====
+echo ===== Æô¶¯¿ª·¢»·¾³ =====
 
-REM ï¿½ï¿½È¡ï¿½ï¿½Ç°ï¿½Å±ï¿½ï¿½ï¿½ï¿½ï¿½Ä¿Â¼
+REM »ñÈ¡½Å±¾ËùÔÚÄ¿Â¼
 set SCRIPT_DIR=%~dp0
 cd /d %SCRIPT_DIR%
 
-REM ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½â»·ï¿½ï¿½(ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½)
+REM ¼¤»îÐéÄâ»·¾³£¨Èç¹û´æÔÚ£©
 if exist venv\Scripts\activate.bat (
     call venv\Scripts\activate.bat
-    echo ï¿½Ñ¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½â»·ï¿½ï¿½
+    echo [³É¹¦] ÐéÄâ»·¾³ÒÑ¼¤»î
 ) else (
-    echo ï¿½ï¿½ï¿½ï¿½: Î´ï¿½Òµï¿½ï¿½ï¿½ï¿½â»·ï¿½ï¿½ï¿½ï¿½Ê¹ï¿½ï¿½ÏµÍ³Python
+    echo [´íÎó] Î´ÕÒµ½ÐéÄâ»·¾³£¬ÇëÏÈ°²×° Python ²¢´´½¨ÐéÄâ»·¾³£¡
+    exit /b
 )
 
-REM ï¿½ï¿½ï¿½Ã¶Ë¿ï¿½
+REM ¶Ë¿ÚÉèÖÃ
 set DJANGO_PORT=8896
 set DAPHNE_PORT=8896
 set FLOWER_PORT=5566
 
-REM ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+REM Æô¶¯ Django ¿ª·¢·þÎñÆ÷
 echo.
-echo ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Djangoï¿½ï¿½ï¿½ï¿½ (ï¿½Ë¿ï¿½: %DJANGO_PORT%)...
-start cmd /k "title Djangoï¿½ï¿½ï¿½ï¿½ && python manage.py runserver 0.0.0.0:%DJANGO_PORT%"
+echo [Æô¶¯] Django ·þÎñÆ÷ (¶Ë¿Ú: %DJANGO_PORT%)...
+start cmd /k "title Django ·þÎñÆ÷ && python manage.py runserver 0.0.0.0:%DJANGO_PORT%"
 timeout /t 5 /nobreak > nul
 
-echo ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Celery Beatï¿½ï¿½ï¿½ï¿½...
+REM Æô¶¯ Celery Beat
+echo [Æô¶¯] Celery Beat...
 start cmd /k "title Celery Beat && python -m celery -A server beat -l INFO --scheduler django_celery_beat.schedulers:DatabaseScheduler --max-interval 60"
 timeout /t 5 /nobreak > nul
 
-echo ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Celery Workerï¿½ï¿½ï¿½ï¿½...
-start cmd /k "title Celery Worker && python -m celery -A server worker -P threads -l INFO -c 10 -Q celery --heartbeat-interval 10 -n celery@%%h --without-mingle"
+REM Æô¶¯ Celery Worker
+echo [Æô¶¯] Celery Worker...
+start cmd /k "title Celery Worker && python -m celery -A server worker -P threads -l INFO -c 10 -Q celery --heartbeat-interval 10 -n celery@%COMPUTERNAME% --without-mingle"
 timeout /t 5 /nobreak > nul
 
-echo ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Flowerï¿½ï¿½ï¿½ï¿½ (ï¿½Ë¿ï¿½: %FLOWER_PORT%)...
-start cmd /k "title Flowerï¿½ï¿½ï¿½ && python -m celery -A server flower --logging=info --url_prefix=api/flower --auto_refresh=False --address=0.0.0.0 --port=%FLOWER_PORT%"
+REM Æô¶¯ Flower ¼à¿Ø
+echo [Æô¶¯] Flower ¼à¿Ø (¶Ë¿Ú: %FLOWER_PORT%)...
+start cmd /k "title Flower ¼à¿Ø && python -m celery -A server flower --logging=info --url_prefix=api/flower --auto_refresh=False --address=0.0.0.0 --port=%FLOWER_PORT%"
 
-echo ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½WebSocketï¿½ï¿½ï¿½ï¿½ (ï¿½Ë¿ï¿½: %DAPHNE_PORT%)...
-start cmd /k "title WebSocketï¿½ï¿½ï¿½ï¿½ && daphne -p %DAPHNE_PORT% server.asgi:application"
+REM Æô¶¯ WebSocket ·þÎñÆ÷
+echo [Æô¶¯] WebSocket ·þÎñÆ÷ (¶Ë¿Ú: %DAPHNE_PORT%)...
+start cmd /k "title WebSocket ·þÎñÆ÷ && daphne -p %DAPHNE_PORT% server.asgi:application"
 timeout /t 5 /nobreak > nul
 
 echo.
-echo ï¿½ï¿½ï¿½Ð·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½!
-echo Djangoï¿½ï¿½ï¿½ï¿½ï¿½Ö·: http://localhost:%DJANGO_PORT%
-echo Flowerï¿½ï¿½Øµï¿½Ö·: http://localhost:%FLOWER_PORT%
-echo WebSocketï¿½ï¿½ï¿½ï¿½ï¿½Ö·: ws://localhost:%DAPHNE_PORT%
+echo === ËùÓÐ·þÎñÒÑÆô¶¯! ===
+echo Django ·þÎñÆ÷: http://localhost:%DJANGO_PORT%
+echo Flower ¼à¿Ø: http://localhost:%FLOWER_PORT%
+echo WebSocket ·þÎñÆ÷: ws://localhost:%DAPHNE_PORT%

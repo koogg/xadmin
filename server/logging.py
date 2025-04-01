@@ -13,20 +13,38 @@ from server.utils import get_current_request
 
 
 class DailyTimedRotatingFileHandler(TimedRotatingFileHandler):
-    def rotator(self, source, dest):
-        """ Override the original method to rotate the log file daily."""
-        dest = self._get_rotate_dest_filename(source)
-        if os.path.exists(source) and not os.path.exists(dest):
-            # 存在多个服务进程时, 保证只有一个进程成功 rotate
-            os.rename(source, dest)
-
     @staticmethod
-    def _get_rotate_dest_filename(source):
+    def rotator(source, dest):
+        """ Override the original method to rotate the log file daily."""
+        # Get the destination filename based on yesterday's date
         date_yesterday = (datetime.now() - timedelta(days=1)).strftime('%Y-%m-%d')
         path = [os.path.dirname(source), date_yesterday, os.path.basename(source)]
-        filename = os.path.join(*path)
-        os.makedirs(os.path.dirname(filename), exist_ok=True)
-        return filename
+        dest_filename = os.path.join(*path)
+        os.makedirs(os.path.dirname(dest_filename), exist_ok=True)
+        
+        if os.path.exists(source) and not os.path.exists(dest_filename):
+            try:
+                # 存在多个服务进程时, 保证只有一个进程成功 rotate
+                os.rename(source, dest_filename)
+            except (PermissionError, OSError) as e:
+                # Handle case when file is in use by another process
+                try:
+                    # Try to copy content and truncate instead
+                    with open(source, 'rb') as src_file:
+                        content = src_file.read()
+                    
+                    with open(dest_filename, 'wb') as dst_file:
+                        dst_file.write(content)
+                    
+                    # Truncate the original file
+                    with open(source, 'w') as src_file:
+                        pass
+                        
+                    logging.info(f"Log rotation completed by copy method: {source} -> {dest_filename}")
+                except Exception as copy_err:
+                    logging.error(f"Failed to rotate log by copy method: {copy_err}")
+    
+    # Remove the _get_rotate_dest_filename method as it's now integrated into rotator
 
 
 class ServerFormatter(logging.Formatter):

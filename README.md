@@ -4,6 +4,28 @@ xadmin-基于Django+vue3的rbac权限管理系统
 
 前端 [xadmin-client](https://github.com/nineaiyu/xadmin-client)
 
+## 项目目录结构
+~~~
+├── captcha                     #图片验证码应用
+├── common                      # 项目工具类库，包含各种封装方法
+├── config.yml                   # 运行配置文件，包含数据库，Redis等配置信息
+├── docker-compose-sqlite.yml
+├── docker-compose.yml          # docker compose 运行文件
+├── Dockerfile                  # 用与构建容器镜像文件
+├── LICENSE
+├── loadjson                  # 默认的菜单，权限，字段配置
+├── locale                    # 国际化配置，支持中文和英语
+├── logs                      # 运行日志
+├── manage.py
+├── message                   # websocket 消息
+├── notifications             # 站内信，消息通知推送应用
+├── README.md
+├── requirements.txt          # Django 运行依赖
+├── server                    # 项目主应用
+├── settings                  # 项目相关配置应用
+└── system                    # 系统应用，包含用户，菜单，日志，角色等
+~~~
+
 ## 开发部署文档
 
 修改配置文件
@@ -68,3 +90,18 @@ daphne -p 8896 server.asgi:application
 ```shell
 python manage.py start all -d  # -d 参数是后台运行，如果去掉，则前台运行
 ```
+
+
+#### Other
+~~~
+1. 通知模块核心文件 ：
+   
+   - notifications/message.py - 包含消息发送的核心工具类
+   - notifications/notifications.py - 包含消息类型定义和基类
+   - notifications/models.py - 包含消息存储的数据模型
+2. 任务模块核心文件 ：
+   
+   - server/celery.py - Celery配置文件
+   - common/celery/decorator.py - 任务装饰器定义
+   - common/tasks.py - 通用任务定义
+~~~
